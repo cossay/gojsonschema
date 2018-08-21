@@ -34,7 +34,7 @@ package main
 
 import (
     "fmt"
-    "github.com/xeipuuv/gojsonschema"
+    "github.com/cossay/gojsonschema"
 )
 
 func main() {
