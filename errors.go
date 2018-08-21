@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"sync"
 	"text/template"
+        "strings"
 )
 
 var errorTemplates errorTemplate = errorTemplate{template.New("errors-new"), sync.RWMutex{}}
@@ -284,6 +285,21 @@ func newError(err ResultError, context *JsonContext, value interface{}, locale l
 	}
 
 	err.SetDescription(formatErrorDescription(err.DescriptionFormat(), details))
+	
+	//Apply this only to required field errors
+	//This fixes issues with the required validator not returning full path of fields in its resulting errors.
+	//it also fixes the following:
+	//https://github.com/xeipuuv/gojsonschema/issues/187
+	//https://github.com/xeipuuv/gojsonschema/issues/145
+	if _, isRequredError := err.(*RequiredError); isRequredError {
+		if nil != details["property"] {
+			parentPath := strings.Replace(context.String(), STRING_CONTEXT_ROOT+".", "", 1)
+			if STRING_CONTEXT_ROOT != parentPath {
+				details["property"] = parentPath + "." + details["field"].(string)
+				//err.SetDetails(details)
+			}
+		}
+	}
 }
 
 // formatErrorDescription takes a string in the default text/template
