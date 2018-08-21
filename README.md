@@ -16,7 +16,7 @@ References :
 ## Installation
 
 ```
-go get github.com/xeipuuv/gojsonschema
+go get github.com/cossay/gojsonschema
 ```
 
 Dependencies :
